@@ -4,13 +4,13 @@
 // Copyright (c) 2025-2026 BlackRoad OS, Inc. All Rights Reserved.
 
 async function stampChain(action, entity, details) {
-  fetch('https://roadchain-worker.blackroad.workers.dev/api/event', {
+  fetch('https://roadchain.blackroad.io/api/event', {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({app:'roadside', type: action, data: {entity, details}})
   }).catch(()=>{});
 }
 async function earnCoin(road_id, action, amount) {
-  fetch('https://roadcoin-worker.blackroad.workers.dev/api/earn', {
+  fetch('https://roadcoin.blackroad.io/api/earn', {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({road_id: road_id || 'system', action, amount})
   }).catch(()=>{});

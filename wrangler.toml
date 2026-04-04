@@ -1,0 +1,15 @@
+name = "roadside-blackroad"
+main = "src/worker.js"
+compatibility_date = "2026-03-31"
+
+[ai]
+binding = "AI"
+
+[[routes]]
+pattern = "roadside.blackroad.io/*"
+zone_name = "blackroad.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "roadside"
+database_id = "6b0aeef3-af2b-4ccb-8370-e7cb2c5ae6d9"
