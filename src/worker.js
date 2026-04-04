@@ -25,6 +25,7 @@ export default {
     const c = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type'};
     if (request.method === 'OPTIONS') return new Response(null, {status:204,headers:c});
     if (p === '/' || p === '') return new Response(HTML, {headers:{'Content-Type':'text/html;charset=utf-8','Content-Security-Policy':"frame-ancestors 'self' https://blackroad.io https://*.blackroad.io",...c}});
+    if (p === '/sitemap.xml') return new Response(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://roadside.blackroad.io/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n</urlset>`, {headers:{'Content-Type':'application/xml',...c}});
     if (p === '/health') return j({ok:true,service:'roadside'},c);
 
     try {
@@ -402,22 +403,22 @@ Return ONLY valid JSON: {"recommendations":[{"product":"Name","reason":"why"},{"
       // ─── GET /api/tour — Guided tour of all 17 products with descriptions ───
       if (p === '/api/tour' && request.method === 'GET') {
         const products = [
-          { id: 'roadie', name: 'Roadie', url: 'https://tutor.blackroad.io', category: 'Education', tagline: 'AI tutor that learns how you learn' },
+          { id: 'roadie', name: 'Roadie', url: 'https://roadie.blackroad.io', category: 'Education', tagline: 'AI tutor that learns how you learn' },
           { id: 'roadtrip', name: 'RoadTrip', url: 'https://roadtrip.blackroad.io', category: 'Communication', tagline: '27 AI agents, always on, always yours' },
           { id: 'backroad', name: 'BackRoad', url: 'https://backroad.blackroad.io', category: 'Social', tagline: 'Your content, everywhere, on autopilot' },
-          { id: 'roadview', name: 'RoadView', url: 'https://search.blackroad.io', category: 'Search', tagline: 'AI-powered search that actually answers' },
+          { id: 'roadview', name: 'RoadView', url: 'https://roadview.blackroad.io', category: 'Search', tagline: 'AI-powered search that actually answers' },
           { id: 'carkeys', name: 'CarKeys', url: 'https://carkeys.blackroad.io', category: 'Security', tagline: 'Your keys, your kingdom' },
-          { id: 'canvas', name: 'Canvas', url: 'https://canvas.blackroad.io', category: 'Creative', tagline: 'Design tools for sovereign creators' },
+          { id: 'canvas', name: 'Canvas', url: 'https://blackboard.blackroad.io', category: 'Creative', tagline: 'Design tools for sovereign creators' },
           { id: 'roadcode', name: 'RoadCode', url: 'https://roadcode.blackroad.io', category: 'Development', tagline: 'Code editor with fleet AI' },
           { id: 'roadwork', name: 'RoadWork', url: 'https://work.blackroad.io', category: 'Automation', tagline: 'Agent workflows that never sleep' },
           { id: 'oneway', name: 'OneWay', url: 'https://oneway.blackroad.io', category: 'Data', tagline: 'Export everything. Own your data.' },
-          { id: 'roadpay', name: 'RoadPay', url: 'https://pay.blackroad.io', category: 'Payments', tagline: 'Payments without the middleman' },
+          { id: 'roadpay', name: 'RoadPay', url: 'https://roadcoin.blackroad.io', category: 'Payments', tagline: 'Payments without the middleman' },
           { id: 'carpool', name: 'CarPool', url: 'https://carpool.blackroad.io', category: 'Automation', tagline: 'Connect your tools, your way' },
-          { id: 'chat', name: 'Chat', url: 'https://chat.blackroad.io', category: 'Communication', tagline: 'AI chat, sovereign and private' },
+          { id: 'chat', name: 'Chat', url: 'https://roadtrip.blackroad.io', category: 'Communication', tagline: 'AI chat, sovereign and private' },
           { id: 'roadside', name: 'RoadSide', url: 'https://roadside.blackroad.io', category: 'Onboarding', tagline: 'Pull over. We will take it from here.' },
           { id: 'video', name: 'Video', url: 'https://video.blackroad.io', category: 'Media', tagline: 'Video tools for the road' },
           { id: 'live', name: 'Live', url: 'https://live.blackroad.io', category: 'Media', tagline: 'Agent roundtables and live events' },
-          { id: 'game', name: 'Game', url: 'https://game.blackroad.io', category: 'Interactive', tagline: 'Play the road' },
+          { id: 'game', name: 'Game', url: 'https://roadworld.blackroad.io', category: 'Interactive', tagline: 'Play the road' },
           { id: 'radio', name: 'Radio', url: 'https://radio.blackroad.io', category: 'Media', tagline: 'Audio and podcasts from the fleet' },
         ];
 
@@ -1063,7 +1064,7 @@ Return ONLY valid JSON: {"recommendations":[{"product":"Name","reason":"why"},{"
           next_steps: [
             { action: 'Open BlackRoad OS', url: 'https://app.blackroad.io' },
             { action: 'Meet the agents', url: 'https://roadtrip.blackroad.io' },
-            { action: 'Start learning', url: 'https://tutor.blackroad.io' },
+            { action: 'Start learning', url: 'https://roadie.blackroad.io' },
           ],
         }, c, 201);
       }
@@ -1109,16 +1110,16 @@ Return ONLY valid JSON: {"tips":[{"title":"short title","tip":"1-2 sentence acti
           } catch {
             // Fallback tips
             tips = [
-              { title: 'Start with Roadie', tip: 'Open tutor.blackroad.io and ask it anything. It learns how you learn.', product: 'Roadie', difficulty: 'beginner' },
+              { title: 'Start with Roadie', tip: 'Open roadie.blackroad.io and ask it anything. It learns how you learn.', product: 'Roadie', difficulty: 'beginner' },
               { title: 'Meet your agents', tip: 'Visit roadtrip.blackroad.io to chat with 27 AI agents across 7 divisions.', product: 'RoadTrip', difficulty: 'beginner' },
               { title: 'Secure your keys', tip: 'Set up CarKeys at carkeys.blackroad.io to manage all your credentials.', product: 'CarKeys', difficulty: 'beginner' },
-              { title: 'Create something', tip: 'Use Canvas at canvas.blackroad.io to design with AI assistance.', product: 'Canvas', difficulty: 'intermediate' },
+              { title: 'Create something', tip: 'Use Canvas at blackboard.blackroad.io to design with AI assistance.', product: 'Canvas', difficulty: 'intermediate' },
               { title: 'Automate your workflow', tip: 'Connect your tools with CarPool at carpool.blackroad.io.', product: 'CarPool', difficulty: 'advanced' },
             ].slice(0, count);
           }
         } catch {
           tips = [
-            { title: 'Start with Roadie', tip: 'Open tutor.blackroad.io and ask it anything.', product: 'Roadie', difficulty: 'beginner' },
+            { title: 'Start with Roadie', tip: 'Open roadie.blackroad.io and ask it anything.', product: 'Roadie', difficulty: 'beginner' },
             { title: 'Meet your agents', tip: 'Visit roadtrip.blackroad.io to chat with the fleet.', product: 'RoadTrip', difficulty: 'beginner' },
             { title: 'Secure your keys', tip: 'Set up CarKeys at carkeys.blackroad.io.', product: 'CarKeys', difficulty: 'beginner' },
           ];
@@ -1580,19 +1581,19 @@ Return ONLY valid JSON: {"tips":[{"title":"short title","tip":"1-2 sentence acti
         const userId = url.searchParams.get('user_id') || '';
         const products = [
           {id:'app',name:'BlackRoad OS',url:'https://app.blackroad.io',critical:true},
-          {id:'tutor',name:'Roadie (Tutor)',url:'https://tutor.blackroad.io',critical:true},
+          {id:'tutor',name:'Roadie (Tutor)',url:'https://roadie.blackroad.io',critical:true},
           {id:'roadtrip',name:'RoadTrip',url:'https://roadtrip.blackroad.io',critical:true},
-          {id:'chat',name:'Chat',url:'https://chat.blackroad.io',critical:true},
-          {id:'search',name:'RoadView',url:'https://search.blackroad.io',critical:false},
+          {id:'chat',name:'Chat',url:'https://roadtrip.blackroad.io',critical:true},
+          {id:'search',name:'RoadView',url:'https://roadview.blackroad.io',critical:false},
           {id:'backroad',name:'BackRoad',url:'https://backroad.blackroad.io',critical:false},
           {id:'carkeys',name:'CarKeys',url:'https://carkeys.blackroad.io',critical:false},
-          {id:'canvas',name:'Canvas',url:'https://canvas.blackroad.io',critical:false},
+          {id:'canvas',name:'Canvas',url:'https://blackboard.blackroad.io',critical:false},
           {id:'roadcode',name:'RoadCode',url:'https://roadcode.blackroad.io',critical:false},
           {id:'work',name:'RoadWork',url:'https://work.blackroad.io',critical:false},
-          {id:'pay',name:'RoadPay',url:'https://pay.blackroad.io',critical:false},
+          {id:'pay',name:'RoadPay',url:'https://roadcoin.blackroad.io',critical:false},
           {id:'video',name:'Video',url:'https://video.blackroad.io',critical:false},
           {id:'live',name:'Live',url:'https://live.blackroad.io',critical:false},
-          {id:'game',name:'Game',url:'https://game.blackroad.io',critical:false},
+          {id:'game',name:'Game',url:'https://roadworld.blackroad.io',critical:false},
           {id:'radio',name:'Radio',url:'https://radio.blackroad.io',critical:false},
           {id:'oneway',name:'OneWay',url:'https://oneway.blackroad.io',critical:false},
           {id:'carpool',name:'CarPool',url:'https://carpool.blackroad.io',critical:false},
@@ -1705,7 +1706,7 @@ Return ONLY valid JSON: {"tips":[{"title":"short title","tip":"1-2 sentence acti
         };
 
         // Build quick actions based on behavior
-        if (!visited.includes('roadie')) dashboard.quick_actions.push({action:'Start Learning',url:'https://tutor.blackroad.io',reason:'You have not tried Roadie yet'});
+        if (!visited.includes('roadie')) dashboard.quick_actions.push({action:'Start Learning',url:'https://roadie.blackroad.io',reason:'You have not tried Roadie yet'});
         if (!visited.includes('carkeys')) dashboard.quick_actions.push({action:'Secure Credentials',url:'https://carkeys.blackroad.io',reason:'Security is important'});
         if (behavior.sessions_count > 3) dashboard.quick_actions.push({action:'Explore Advanced Tools',url:'https://work.blackroad.io',reason:'You are an experienced user'});
         if (!dashboard.quick_actions.length) dashboard.quick_actions.push({action:'Open BlackRoad OS',url:'https://app.blackroad.io',reason:'Your home base'});
@@ -2001,7 +2002,7 @@ function getTourDefinitions() {
       description: 'Explore Canvas, Video, and the creative suite.',
       estimated_time: '12 min',
       steps: [
-        {step:0, title:'Open Canvas', description:'Launch the design tools at canvas.blackroad.io.', action:'Visit Canvas', product:'Canvas'},
+        {step:0, title:'Open Canvas', description:'Launch the design tools at blackboard.blackroad.io.', action:'Visit Canvas', product:'Canvas'},
         {step:1, title:'Create Something', description:'Make your first design using AI-assisted tools.', action:'Create a design', product:'Canvas'},
         {step:2, title:'Share on BackRoad', description:'Post your creation to multiple platforms at once.', action:'Share via BackRoad', product:'BackRoad'},
         {step:3, title:'Explore Video', description:'Check out video tools at video.blackroad.io.', action:'Visit Video', product:'Video'},
@@ -2014,22 +2015,22 @@ function getTourDefinitions() {
 // ─── Product catalog for ML recommendations ───
 function getProductCatalog() {
   return [
-    {id:'roadie',name:'Roadie',category:'Education',url:'https://tutor.blackroad.io',tags:['learning','tutor','ai','education','beginner']},
+    {id:'roadie',name:'Roadie',category:'Education',url:'https://roadie.blackroad.io',tags:['learning','tutor','ai','education','beginner']},
     {id:'roadtrip',name:'RoadTrip',category:'Communication',url:'https://roadtrip.blackroad.io',tags:['chat','agents','team','collaboration','ai']},
     {id:'backroad',name:'BackRoad',category:'Social',url:'https://backroad.blackroad.io',tags:['social','content','posting','marketing','creator']},
-    {id:'roadview',name:'RoadView',category:'Search',url:'https://search.blackroad.io',tags:['search','research','ai','knowledge']},
+    {id:'roadview',name:'RoadView',category:'Search',url:'https://roadview.blackroad.io',tags:['search','research','ai','knowledge']},
     {id:'carkeys',name:'CarKeys',category:'Security',url:'https://carkeys.blackroad.io',tags:['security','credentials','vault','privacy']},
-    {id:'canvas',name:'Canvas',category:'Creative',url:'https://canvas.blackroad.io',tags:['design','creative','art','visual']},
+    {id:'canvas',name:'Canvas',category:'Creative',url:'https://blackboard.blackroad.io',tags:['design','creative','art','visual']},
     {id:'roadcode',name:'RoadCode',category:'Development',url:'https://roadcode.blackroad.io',tags:['code','development','programming','ide']},
     {id:'roadwork',name:'RoadWork',category:'Automation',url:'https://work.blackroad.io',tags:['automation','workflows','agents','tasks']},
     {id:'oneway',name:'OneWay',category:'Data',url:'https://oneway.blackroad.io',tags:['export','data','portability','backup']},
-    {id:'roadpay',name:'RoadPay',category:'Payments',url:'https://pay.blackroad.io',tags:['payments','billing','subscriptions','commerce']},
+    {id:'roadpay',name:'RoadPay',category:'Payments',url:'https://roadcoin.blackroad.io',tags:['payments','billing','subscriptions','commerce']},
     {id:'carpool',name:'CarPool',category:'Automation',url:'https://carpool.blackroad.io',tags:['automation','integration','workflow','zapier']},
-    {id:'chat',name:'Chat',category:'Communication',url:'https://chat.blackroad.io',tags:['chat','ai','conversation','messaging']},
+    {id:'chat',name:'Chat',category:'Communication',url:'https://roadtrip.blackroad.io',tags:['chat','ai','conversation','messaging']},
     {id:'roadside',name:'RoadSide',category:'Onboarding',url:'https://roadside.blackroad.io',tags:['onboarding','help','setup','guide']},
     {id:'video',name:'Video',category:'Media',url:'https://video.blackroad.io',tags:['video','media','content','creator']},
     {id:'live',name:'Live',category:'Media',url:'https://live.blackroad.io',tags:['live','streaming','events','broadcast']},
-    {id:'game',name:'Game',category:'Interactive',url:'https://game.blackroad.io',tags:['game','interactive','play','fun']},
+    {id:'game',name:'Game',category:'Interactive',url:'https://roadworld.blackroad.io',tags:['game','interactive','play','fun']},
     {id:'radio',name:'Radio',category:'Media',url:'https://radio.blackroad.io',tags:['audio','podcast','radio','music']},
   ];
 }
@@ -2045,10 +2046,10 @@ function getOnboardingTemplates() {
       estimated_time: '3 min',
       recommended_products: ['Roadie','RoadView','Chat'],
       steps: [
-        {step:0, title:'Meet Roadie', description:'Your AI tutor that adapts to how you learn.', action:'Open tutor.blackroad.io'},
+        {step:0, title:'Meet Roadie', description:'Your AI tutor that adapts to how you learn.', action:'Open roadie.blackroad.io'},
         {step:1, title:'Ask a Question', description:'Try asking Roadie about any subject. It remembers your learning style.', action:'Send your first question'},
-        {step:2, title:'Search with RoadView', description:'Use AI-powered search to research any topic.', action:'Open search.blackroad.io'},
-        {step:3, title:'Join the Chat', description:'Connect with AI agents for study help.', action:'Open chat.blackroad.io'},
+        {step:2, title:'Search with RoadView', description:'Use AI-powered search to research any topic.', action:'Open roadview.blackroad.io'},
+        {step:3, title:'Join the Chat', description:'Connect with AI agents for study help.', action:'Open roadtrip.blackroad.io'},
       ],
       default_config: {theme:'focused',notifications:'minimal',ai_level:'supportive'},
     },
@@ -2076,7 +2077,7 @@ function getOnboardingTemplates() {
       estimated_time: '4 min',
       recommended_products: ['Canvas','BackRoad','Video','Live','Radio'],
       steps: [
-        {step:0, title:'Open Canvas', description:'Design tools with AI assistance.', action:'Open canvas.blackroad.io'},
+        {step:0, title:'Open Canvas', description:'Design tools with AI assistance.', action:'Open blackboard.blackroad.io'},
         {step:1, title:'Create Your First Piece', description:'Use Canvas to make something. Anything.', action:'Create a design'},
         {step:2, title:'Set Up BackRoad', description:'Post to 15 platforms from one place.', action:'Open backroad.blackroad.io'},
         {step:3, title:'Explore Video + Live', description:'Video tools and live streaming for your content.', action:'Open video.blackroad.io'},
@@ -2092,7 +2093,7 @@ function getOnboardingTemplates() {
       recommended_products: ['RoadWork','RoadPay','CarPool','BackRoad','RoadTrip'],
       steps: [
         {step:0, title:'Meet Your Team', description:'27 AI agents ready to work. Start with Cecilia (workflow manager).', action:'Open roadtrip.blackroad.io'},
-        {step:1, title:'Set Up Payments', description:'Configure RoadPay for billing and subscriptions.', action:'Open pay.blackroad.io'},
+        {step:1, title:'Set Up Payments', description:'Configure RoadPay for billing and subscriptions.', action:'Open roadcoin.blackroad.io'},
         {step:2, title:'Automate Operations', description:'Use RoadWork to create agent workflows.', action:'Open work.blackroad.io'},
         {step:3, title:'Connect Integrations', description:'CarPool connects your business tools.', action:'Open carpool.blackroad.io'},
         {step:4, title:'Marketing with BackRoad', description:'Automated social posting across 15 platforms.', action:'Open backroad.blackroad.io'},
@@ -2109,18 +2110,18 @@ async function seedKnowledgeBase(db) {
     {id:'kb-01',category:'Getting Started',title:'What is BlackRoad OS?',body:'BlackRoad OS is an AI-powered operating system with 17 products and 27 AI agents. It runs in your browser at app.blackroad.io. Everything is sovereign -- your data stays yours, always exportable, never sold.',tags:['intro','overview','what-is']},
     {id:'kb-02',category:'Getting Started',title:'How do I start onboarding?',body:'Visit roadside.blackroad.io and click "Let\'s Go". Alice, your onboarding guide, will walk you through a 4-step process: tell her who you are, what you want to do, your skill level, and she will recommend the perfect products for you.',tags:['onboarding','setup','start']},
     {id:'kb-03',category:'Getting Started',title:'What is the personality quiz?',body:'The "Find Your Road" quiz asks 5 quick questions about your habits, tools, privacy stance, and AI interests. It matches you to one of 12 personality types (Creator, Developer, Learner, etc.) and recommends the best products for your style.',tags:['quiz','personality','recommendation']},
-    {id:'kb-04',category:'Products',title:'What is Roadie?',body:'Roadie is your AI tutor at tutor.blackroad.io. It adapts to how you learn, remembers your progress, and can teach you anything from math to marketing. It is powered by the full BlackRoad AI fleet.',tags:['roadie','tutor','learning','education']},
+    {id:'kb-04',category:'Products',title:'What is Roadie?',body:'Roadie is your AI tutor at roadie.blackroad.io. It adapts to how you learn, remembers your progress, and can teach you anything from math to marketing. It is powered by the full BlackRoad AI fleet.',tags:['roadie','tutor','learning','education']},
     {id:'kb-05',category:'Products',title:'What is RoadTrip?',body:'RoadTrip at roadtrip.blackroad.io is your team chat with 27 AI agents across 7 divisions. Each agent has a unique personality and specialty. They are always on, always working for you.',tags:['roadtrip','chat','agents','team']},
     {id:'kb-06',category:'Products',title:'What is CarKeys?',body:'CarKeys at carkeys.blackroad.io is your sovereign credential vault. Store passwords, API keys, and secrets. Everything is encrypted. You own your keys, always.',tags:['carkeys','security','credentials','vault']},
     {id:'kb-07',category:'Products',title:'What is BackRoad?',body:'BackRoad at backroad.blackroad.io lets you post content to 15 social platforms from one place. Write once, publish everywhere, on autopilot.',tags:['backroad','social','content','posting']},
-    {id:'kb-08',category:'Products',title:'What is Canvas?',body:'Canvas at canvas.blackroad.io provides AI-assisted design tools. Create graphics, layouts, and visual content with help from the creative division agents.',tags:['canvas','design','creative','art']},
+    {id:'kb-08',category:'Products',title:'What is Canvas?',body:'Canvas at blackboard.blackroad.io provides AI-assisted design tools. Create graphics, layouts, and visual content with help from the creative division agents.',tags:['canvas','design','creative','art']},
     {id:'kb-09',category:'Security',title:'How is my data protected?',body:'BlackRoad OS is sovereign-first. Your data lives in encrypted storage. You can export everything at any time with OneWay. We never sell data, never share it, never train on it. Your keys, your kingdom.',tags:['security','privacy','data','sovereign']},
     {id:'kb-10',category:'Security',title:'Can I self-host BlackRoad?',body:'Yes. BlackRoad is designed for self-hosting. The fleet runs on Raspberry Pis, cloud servers, or any hardware you own. Check the infrastructure docs for setup guides.',tags:['self-host','infrastructure','sovereign','pi']},
     {id:'kb-11',category:'Agents',title:'Who are the 27 agents?',body:'The fleet has 27 agents across 7 divisions: Core (Roadie, Lucidia), Operations (Cecilia, Octavia, Olympia, Silas, Sebastian), Creative (Calliope, Aria, Thalia, Lyra, Sapphira, Seraphina), Knowledge (Alexandria, Theodosia, Sophia, Gematria), Governance (Portia, Atticus, Cicero, Valeria), Human (Alice, Celeste, Elias, Ophelia), Infrastructure (Gaia, Anastasia).',tags:['agents','fleet','divisions','team']},
     {id:'kb-12',category:'Agents',title:'Who is Alice?',body:'Alice is the Exploration and Onboarding guide. Her voice: "Okay, but what\'s actually going on here?" She is curious, direct, warm but no-nonsense. She cuts through fluff and gets you set up fast. She is your first point of contact.',tags:['alice','onboarding','guide','agent']},
     {id:'kb-13',category:'Troubleshooting',title:'I am stuck in onboarding',body:'If onboarding is not progressing, try starting a new session at roadside.blackroad.io. If the chat is not responding, check your internet connection. You can also skip to app.blackroad.io directly -- onboarding is optional.',tags:['stuck','help','troubleshoot','onboarding']},
     {id:'kb-14',category:'Troubleshooting',title:'A product page is not loading',body:'All products are hosted on Cloudflare Workers. If a page is not loading: 1) Check your internet, 2) Try a different browser, 3) Clear cache, 4) The product may be temporarily updating. Most outages resolve in under 5 minutes.',tags:['loading','error','troubleshoot','down']},
-    {id:'kb-15',category:'Billing',title:'How much does BlackRoad cost?',body:'BlackRoad OS has a free tier for exploration. Premium features are $20-50/month depending on usage. RoadCoin is earned through engagement and can be used for premium features. Check pay.blackroad.io for current pricing.',tags:['pricing','billing','cost','free','premium']},
+    {id:'kb-15',category:'Billing',title:'How much does BlackRoad cost?',body:'BlackRoad OS has a free tier for exploration. Premium features are $20-50/month depending on usage. RoadCoin is earned through engagement and can be used for premium features. Check roadcoin.blackroad.io for current pricing.',tags:['pricing','billing','cost','free','premium']},
     {id:'kb-16',category:'Billing',title:'What is RoadCoin?',body:'RoadCoin is the engagement currency of BlackRoad OS. You earn it by completing onboarding, taking quizzes, using products, and being active. It can be used to unlock premium features or as a reputation signal.',tags:['roadcoin','currency','earn','rewards']},
   ];
 
