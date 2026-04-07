@@ -20,7 +20,15 @@ function page(pulse: any): Response {
   const status=down.length===0?'all_green':down.length<=3?'mostly_up':'degraded';
 
   const html=`<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8"><title>RoadSide — Platform Status</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RoadSide — Platform Status</title>
+<meta name="description" content="Live platform status, incident tracking, and service health for BlackRoad OS.">
+<link rel="canonical" href="https://roadside.blackroad.io/">
+<meta property="og:title" content="RoadSide — Platform Status">
+<meta property="og:description" content="Live platform status, incident tracking, and service health for BlackRoad OS.">
+<meta property="og:url" content="https://roadside.blackroad.io/">
+<meta property="og:type" content="website">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"RoadSide","url":"https://roadside.blackroad.io/","description":"Live platform status, incident tracking, and service health for BlackRoad OS.","applicationCategory":"WebApplication","publisher":{"@type":"Organization","name":"BlackRoad OS, Inc.","url":"https://blackroad.io"}}</script>
 <meta http-equiv="refresh" content="60">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
