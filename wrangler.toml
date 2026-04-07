@@ -1,15 +1,18 @@
 name = "roadside-blackroad"
-main = "src/worker.js"
-compatibility_date = "2026-03-31"
-
-[ai]
-binding = "AI"
-
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
 [[routes]]
 pattern = "roadside.blackroad.io/*"
 zone_name = "blackroad.io"
-
+[vars]
+ENVIRONMENT = "production"
+SERVICE_NAME = "roadside"
+VERSION = "2.0.0"
+[[kv_namespaces]]
+binding = "STORE"
+id = "25e2a5186fbd49a4a3b7d3c5c68719e1"
 [[d1_databases]]
 binding = "DB"
-database_name = "roadside"
-database_id = "6b0aeef3-af2b-4ccb-8370-e7cb2c5ae6d9"
+database_name = "blackroad-os-main"
+database_id = "e2c6dcd9-c21a-48ac-8807-7b3a6881c4f7"
