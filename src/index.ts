@@ -33,7 +33,7 @@ function page(pulse: any): Response {
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#030303;--card:#0a0a0a;--border:#111;--text:#f0f0f0;--sub:#444;--green:#00E676;--red:#FF2255;--yellow:#FF6B2B;--grad:linear-gradient(135deg,#00E676,#3E84FF)}
+:root{--bg:#030303;--card:#0a0a0a;--border:#111;--text:#f0f0f0;--sub:#444;--green:#22c55e;--red:#FF2255;--yellow:#FF6B2B;--grad:linear-gradient(135deg,#22c55e,#3E84FF)}
 html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif}
 .grad-bar{height:2px;background:var(--grad)}
 .wrap{max-width:900px;margin:0 auto;padding:32px 20px}
