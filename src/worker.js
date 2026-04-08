@@ -25,8 +25,89 @@ export default {
     const c = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type'};
     if (request.method === 'OPTIONS') return new Response(null, {status:204,headers:c});
     if (p === '/' || p === '') return new Response(HTML, {headers:{'Content-Type':'text/html;charset=utf-8','Content-Security-Policy':"frame-ancestors 'self' https://blackroad.io https://*.blackroad.io",...c}});
-    if (p === '/sitemap.xml') return new Response(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://roadside.blackroad.io/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n</urlset>`, {headers:{'Content-Type':'application/xml',...c}});
-    if (p === '/health') return j({ok:true,service:'roadside'},c);
+    // ─── Help Article Pages ───
+    const RS_ARTICLES = [
+      { slug: 'getting-started', name: 'Getting Started with BlackRoad', category: 'Getting Started', description: 'A quick guide to set up your BlackRoad account and start using the platform in under 5 minutes.', steps: ['Visit app.blackroad.io and click Get Started', 'Enter your email address and create a password', 'Verify your email by clicking the link we send you', 'Complete your profile by adding your name and role', 'Choose your first product to explore (Roadie, RoadTrip, or BackRoad)', 'Follow the interactive onboarding tour for your chosen product', 'You are ready to go! Check the dashboard for recommended next steps'], related: ['account-setup', 'keyboard-shortcuts', 'troubleshooting'] },
+      { slug: 'account-setup', name: 'Account Setup', category: 'Account', description: 'Configure your BlackRoad account settings, profile information, and notification preferences.', steps: ['Navigate to Settings from the top-right menu', 'Upload a profile photo and set your display name', 'Add your timezone and language preference', 'Configure notification preferences for email and in-app alerts', 'Connect any third-party accounts you want to integrate', 'Set up your default workspace and dashboard layout', 'Save your changes and return to the dashboard'], related: ['getting-started', 'privacy-settings', 'two-factor-auth'] },
+      { slug: 'forgot-password', name: 'Reset Your Password', category: 'Account', description: 'Forgot your password? Reset it in under a minute with your registered email address.', steps: ['Go to app.blackroad.io and click Sign In', 'Click the Forgot Password link below the password field', 'Enter the email address associated with your account', 'Check your inbox for a password reset email (check spam too)', 'Click the reset link in the email within 15 minutes', 'Enter your new password (minimum 12 characters recommended)', 'Sign in with your new password'], related: ['account-setup', 'two-factor-auth', 'contact-support'] },
+      { slug: 'billing-help', name: 'Billing and Payments', category: 'Billing', description: 'Manage your subscription, update payment methods, view invoices, and understand your billing cycle.', steps: ['Go to Settings then Billing to see your current plan', 'Click Update Payment Method to change your card or add a new one', 'View past invoices by clicking Invoice History', 'Download PDF invoices for your records or accounting', 'To upgrade your plan, click Change Plan and select your new tier', 'Plan changes take effect immediately with prorated billing', 'Contact support if you see any unexpected charges'], related: ['cancel-subscription', 'data-export', 'contact-support'] },
+      { slug: 'cancel-subscription', name: 'Cancel Your Subscription', category: 'Billing', description: 'How to cancel your subscription and what happens to your data after cancellation.', steps: ['Go to Settings then Billing then Plan Details', 'Click Cancel Subscription at the bottom of the page', 'Select your reason for canceling (optional but helpful)', 'Review what happens to your data after cancellation', 'Confirm cancellation by clicking Yes, Cancel My Plan', 'Your access continues until the end of your current billing period', 'After expiry your data is retained for 30 days then permanently deleted', 'You can reactivate anytime within 30 days to restore everything'], related: ['billing-help', 'data-export', 'contact-support'] },
+      { slug: 'data-export', name: 'Export Your Data', category: 'Account', description: 'Download all your data from BlackRoad in standard formats. Your data is always yours.', steps: ['Navigate to Settings then Privacy then Data Export', 'Select which data to export: all data, messages, files, or settings', 'Choose your preferred format: JSON, CSV, or ZIP archive', 'Click Request Export to begin processing', 'You will receive an email when your export is ready to download', 'Download the file within 7 days before it expires', 'Verify the export contains everything you need'], related: ['privacy-settings', 'cancel-subscription', 'account-setup'] },
+      { slug: 'privacy-settings', name: 'Privacy Settings', category: 'Account', description: 'Control who can see your profile, activity status, and how your data is used across BlackRoad.', steps: ['Go to Settings then Privacy', 'Toggle Online Status visibility on or off', 'Choose who can see your profile: Everyone, Contacts Only, or Nobody', 'Configure read receipt preferences per conversation type', 'Review and manage third-party app permissions', 'Set data retention preferences for messages and files', 'Review your Privacy Dashboard for a summary of all settings'], related: ['two-factor-auth', 'data-export', 'account-setup'] },
+      { slug: 'two-factor-auth', name: 'Two-Factor Authentication', category: 'Account', description: 'Add an extra layer of security to your account with two-factor authentication (2FA).', steps: ['Go to Settings then Security then Two-Factor Authentication', 'Click Enable 2FA', 'Choose your method: authenticator app (recommended) or SMS', 'For authenticator app: scan the QR code with Google Authenticator or similar', 'Enter the 6-digit verification code to confirm setup', 'Save your backup recovery codes in a safe place', 'Sign out and sign back in to test that 2FA works correctly'], related: ['forgot-password', 'account-setup', 'privacy-settings'] },
+      { slug: 'browser-support', name: 'Browser Support', category: 'Technical', description: 'Which browsers work best with BlackRoad and how to troubleshoot browser-specific issues.', steps: ['BlackRoad works best on Chrome, Firefox, Safari, and Edge (latest versions)', 'Enable JavaScript and cookies for blackroad.io', 'Disable browser extensions that might block functionality (ad blockers, privacy shields)', 'Clear your browser cache if you experience loading issues', 'Check that your browser is updated to the latest version', 'For WebSocket features, ensure your network allows persistent connections', 'If issues persist, try an incognito or private browsing window'], related: ['troubleshooting', 'mobile-app', 'keyboard-shortcuts'] },
+      { slug: 'mobile-app', name: 'Mobile App', category: 'Technical', description: 'Access BlackRoad on your phone or tablet. Available as a progressive web app on all devices.', steps: ['Open app.blackroad.io in your mobile browser', 'Tap the Share button (iOS) or Menu button (Android)', 'Select Add to Home Screen', 'Give the app a name and tap Add', 'The BlackRoad app icon now appears on your home screen', 'Open it for a full-screen, app-like experience', 'Push notifications work just like a native app'], related: ['browser-support', 'getting-started', 'notifications'] },
+      { slug: 'keyboard-shortcuts', name: 'Keyboard Shortcuts', category: 'Technical', description: 'Speed up your workflow with keyboard shortcuts for navigation, messaging, and common actions.', steps: ['Press Ctrl+K (Cmd+K on Mac) to open the command palette', 'Press Ctrl+/ to view all available keyboard shortcuts', 'Use Ctrl+N to start a new message or conversation', 'Press Ctrl+F to search within the current view', 'Use Ctrl+Shift+M to toggle the sidebar', 'Press Escape to close any open panel or dialog', 'Customize shortcuts in Settings then Keyboard Shortcuts'], related: ['getting-started', 'browser-support', 'accessibility'] },
+      { slug: 'accessibility', name: 'Accessibility', category: 'Technical', description: 'BlackRoad is built to be accessible to everyone. Learn about our accessibility features and standards.', steps: ['BlackRoad follows WCAG 2.1 AA accessibility standards', 'All interactive elements are keyboard navigable', 'Screen reader support is built in with proper ARIA labels', 'High contrast mode is available in Settings then Appearance', 'Font sizes can be adjusted globally or per-view', 'Motion and animation can be reduced in Settings then Accessibility', 'Report accessibility issues to accessibility@blackroad.io'], related: ['keyboard-shortcuts', 'browser-support', 'contact-support'] },
+      { slug: 'api-access', name: 'API Access', category: 'Integrations', description: 'Connect your applications to BlackRoad using our REST API. Generate API keys and manage permissions.', steps: ['Go to Settings then Developer then API Keys', 'Click Generate New API Key', 'Name your key and select the permission scopes it needs', 'Copy the generated key immediately as it will not be shown again', 'Use the key in your Authorization header as Bearer token', 'Test your connection with a GET request to /api/health', 'Monitor API usage in the Developer Dashboard'], related: ['webhook-setup', 'integration-guide', 'custom-domain'] },
+      { slug: 'webhook-setup', name: 'Webhook Setup', category: 'Integrations', description: 'Receive real-time notifications when events happen in BlackRoad by configuring webhooks.', steps: ['Go to Settings then Developer then Webhooks', 'Click Add Webhook Endpoint', 'Enter your server URL that will receive webhook payloads', 'Select which events should trigger webhooks', 'Set a webhook secret for payload verification', 'Click Test Webhook to send a sample payload to your endpoint', 'Monitor webhook delivery status in the Webhooks Dashboard'], related: ['api-access', 'integration-guide', 'troubleshooting'] },
+      { slug: 'custom-domain', name: 'Custom Domain', category: 'Integrations', description: 'Use your own domain name to access your BlackRoad workspace for a branded experience.', steps: ['Go to Settings then Workspace then Custom Domain', 'Enter your desired domain (e.g., chat.yourcompany.com)', 'Add the CNAME record shown to your DNS provider', 'Wait for DNS propagation (usually 5-30 minutes)', 'Click Verify Domain to confirm the DNS record is live', 'Enable HTTPS (automatic via our certificate provisioning)', 'Your custom domain is now active and ready to use'], related: ['api-access', 'team-management', 'troubleshooting'] },
+      { slug: 'team-management', name: 'Team Management', category: 'Getting Started', description: 'Invite team members, organize groups, and manage your workspace for effective collaboration.', steps: ['Go to Settings then Team to see current members', 'Click Invite Members and enter email addresses', 'Assign roles: Admin, Member, or Guest', 'Create teams or departments for organizational structure', 'Set default channels that new members join automatically', 'Configure guest access limits and expiration dates', 'Review the team activity log for membership changes'], related: ['role-permissions', 'getting-started', 'integration-guide'] },
+      { slug: 'role-permissions', name: 'Role Permissions', category: 'Getting Started', description: 'Understand the different roles and what each can do within your BlackRoad workspace.', steps: ['Owner: full control including billing, deletion, and ownership transfer', 'Admin: manage members, channels, integrations, and workspace settings', 'Member: create channels, send messages, share files, use all features', 'Guest: limited access to specific channels, no workspace settings', 'Go to Settings then Roles to customize permission sets', 'Create custom roles with specific permission combinations', 'Assign roles when inviting members or from the Team page'], related: ['team-management', 'api-access', 'privacy-settings'] },
+      { slug: 'integration-guide', name: 'Integration Guide', category: 'Integrations', description: 'Connect BlackRoad with your favorite tools: calendars, project management, CI/CD, and more.', steps: ['Go to Settings then Integrations to browse available connections', 'Click Connect on the integration you want to set up', 'Authorize BlackRoad to access the third-party service', 'Configure which events and data should sync', 'Map channels or conversations to external resources', 'Test the integration by triggering a sample event', 'Monitor integration health in the Integrations Dashboard'], related: ['api-access', 'webhook-setup', 'custom-domain'] },
+      { slug: 'troubleshooting', name: 'Troubleshooting', category: 'Technical', description: 'Common issues and solutions for BlackRoad. Fix most problems in under 2 minutes.', steps: ['Clear your browser cache and cookies for blackroad.io', 'Check the BlackRoad status page at status.blackroad.io', 'Disable browser extensions temporarily to rule out conflicts', 'Try a different browser or incognito window', 'Check your internet connection and firewall settings', 'If the issue is account-specific, try signing out and back in', 'Collect browser console logs (F12 then Console) and contact support if the issue persists'], related: ['browser-support', 'contact-support', 'getting-started'] },
+      { slug: 'contact-support', name: 'Contact Support', category: 'Getting Started', description: 'Reach our support team for help with anything not covered in our help articles.', steps: ['Try searching our help articles first for instant answers', 'Click the Help button in the bottom-right corner of any page', 'Select Contact Support from the help menu', 'Describe your issue in detail, including steps to reproduce', 'Attach screenshots or screen recordings if possible', 'Include your browser version and operating system', 'Our team responds within 24 hours on business days'], related: ['troubleshooting', 'getting-started', 'billing-help'] },
+    ];
+
+    if (p.startsWith('/help/') && p !== '/help/') {
+      const slug = p.replace('/help/', '').replace(/\/$/, '');
+      const article = RS_ARTICLES.find(a => a.slug === slug);
+      if (!article) return new Response('Not Found', {status:404});
+      const stepsHtml = article.steps.map((s,i)=>`<li style="padding:12px 0;border-bottom:1px solid #1a1a2e;display:flex;gap:12px"><span style="background:#1a1a2e;color:#7B93DB;min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex-shrink:0">${i+1}</span><span>${s}</span></li>`).join('');
+      const relatedHtml = article.related.map(r => { const ra = RS_ARTICLES.find(a => a.slug === r); return ra ? `<a href="/help/${r}" style="display:inline-block;padding:8px 16px;background:#1a1a2e;border:1px solid #333;border-radius:8px;color:#ccc;text-decoration:none;margin:4px">${ra.name}</a>` : ''; }).join('');
+      const pageHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${article.name} - Help | RoadSide by BlackRoad</title><meta name="description" content="${article.description}"><link rel="canonical" href="https://roadside.blackroad.io/help/${article.slug}"><meta property="og:title" content="${article.name} | RoadSide Help"><meta property="og:description" content="${article.description}"><meta property="og:url" content="https://roadside.blackroad.io/help/${article.slug}"><meta property="og:type" content="article"><meta property="og:site_name" content="RoadSide by BlackRoad"><script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":"HowTo","name":article.name,"description":article.description,"step":article.steps.map((s,i)=>({"@type":"HowToStep","position":i+1,"text":s})),"publisher":{"@type":"Organization","name":"BlackRoad OS, Inc."}})}</script><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a1a;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7}a{color:#7B93DB}.container{max-width:800px;margin:0 auto;padding:40px 20px}.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:600;background:#1a1a2e;border:1px solid #333;margin-bottom:16px}.section{margin:32px 0}.section h2{font-size:20px;margin-bottom:12px;color:#fff}ol.steps{list-style:none;padding:0}.help-box{background:#111;border:1px solid #222;border-radius:12px;padding:24px;margin-top:32px;text-align:center}.cta{display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#FF1D6C,#F5A623);color:#fff;border-radius:12px;text-decoration:none;font-weight:600;margin-top:16px}.nav{padding:20px;border-bottom:1px solid #1a1a2e;display:flex;justify-content:space-between;align-items:center}.nav a{color:#ccc;text-decoration:none}</style></head><body><nav class="nav"><a href="/">RoadSide</a><a href="/help">Help Center</a></nav><div class="container"><span class="badge">${article.category}</span><h1 style="font-size:36px;margin-bottom:16px">${article.name}</h1><p style="font-size:18px;color:#aaa;margin-bottom:32px">${article.description}</p><div class="section"><h2>Step by Step</h2><ol class="steps">${stepsHtml}</ol></div><div class="section"><h2>Related Articles</h2><div>${relatedHtml}</div></div><div class="help-box"><h3 style="margin-bottom:8px">Still need help?</h3><p style="color:#aaa;margin-bottom:16px">Our support team is here for you.</p><a href="/help/contact-support" class="cta">Contact Support</a></div></div><footer style="text-align:center;padding:40px;color:#555;font-size:13px;border-top:1px solid #1a1a2e;margin-top:60px">&#169; 2025-2026 BlackRoad OS, Inc. All rights reserved.</footer><script>(function(){var d={path:location.pathname,ref:document.referrer,w:screen.width,h:screen.height,t:Date.now()};navigator.sendBeacon&&navigator.sendBeacon('/api/analytics',JSON.stringify(d))})()</script></body></html>`;
+      return new Response(pageHtml, {headers:{'Content-Type':'text/html;charset=utf-8'}});
+    }
+
+    if (p === '/help' || p === '/help/') {
+      const rows = RS_ARTICLES.map(a=>`<tr><td style="padding:12px"><a href="/help/${a.slug}" style="color:#7B93DB;text-decoration:none;font-weight:600">${a.name}</a></td><td style="padding:12px;color:#aaa">${a.category}</td><td style="padding:12px;color:#888;font-size:14px">${a.description}</td></tr>`).join('');
+      const indexHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Help Center - Guides and Support | RoadSide by BlackRoad</title><meta name="description" content="Get help with BlackRoad. 20+ step-by-step guides covering account setup, billing, integrations, troubleshooting, and more."><link rel="canonical" href="https://roadside.blackroad.io/help"><meta property="og:title" content="Help Center | RoadSide by BlackRoad"><meta property="og:description" content="20+ step-by-step guides for BlackRoad. Get help fast."><meta property="og:url" content="https://roadside.blackroad.io/help"><meta property="og:type" content="website"><script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":"CollectionPage","name":"RoadSide Help Center","description":"Step-by-step guides for BlackRoad","url":"https://roadside.blackroad.io/help","numberOfItems":RS_ARTICLES.length,"provider":{"@type":"Organization","name":"BlackRoad OS, Inc."}})}</script><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a1a;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6}a{color:#7B93DB}.container{max-width:1000px;margin:0 auto;padding:40px 20px}table{width:100%;border-collapse:collapse;margin-top:24px}th{text-align:left;padding:12px;border-bottom:2px solid #333;color:#fff;font-size:13px;text-transform:uppercase;letter-spacing:1px}td{border-bottom:1px solid #1a1a2e}.nav{padding:20px;border-bottom:1px solid #1a1a2e;display:flex;justify-content:space-between;align-items:center}.nav a{color:#ccc;text-decoration:none}.cta{display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#FF1D6C,#F5A623);color:#fff;border-radius:12px;text-decoration:none;font-weight:600;margin-top:32px}</style></head><body><nav class="nav"><a href="/">RoadSide</a><a href="/help">Help Center</a></nav><div class="container"><h1 style="font-size:36px;margin-bottom:8px">Help Center</h1><p style="color:#aaa;font-size:18px;margin-bottom:24px">${RS_ARTICLES.length} step-by-step guides to help you get the most out of BlackRoad.</p><table><thead><tr><th>Article</th><th>Category</th><th>Description</th></tr></thead><tbody>${rows}</tbody></table><div style="text-align:center;margin-top:48px"><a href="/help/contact-support" class="cta">Contact Support</a></div></div><footer style="text-align:center;padding:40px;color:#555;font-size:13px;border-top:1px solid #1a1a2e;margin-top:60px">&#169; 2025-2026 BlackRoad OS, Inc. All rights reserved.</footer></body></html>`;
+      return new Response(indexHtml, {headers:{'Content-Type':'text/html;charset=utf-8'}});
+    }
+
+    if (p === '/sitemap.xml') {
+      const helpUrls = RS_ARTICLES.map(a=>'  <url><loc>https://roadside.blackroad.io/help/'+a.slug+'</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>').join('\n');
+      return new Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://roadside.blackroad.io/</loc><lastmod>'+new Date().toISOString().split('T')[0]+'</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>\n  <url><loc>https://roadside.blackroad.io/help</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>\n'+helpUrls+'\n</urlset>', {headers:{'Content-Type':'application/xml'}});
+    }
+
+    if (p === '/robots.txt') {
+      return new Response('User-agent: *\nAllow: /\nAllow: /help/\nSitemap: https://roadside.blackroad.io/sitemap.xml\n\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: ChatGPT-User\nDisallow: /\n\nUser-agent: CCBot\nDisallow: /', {headers:{'Content-Type':'text/plain'}});
+    }
+
+    // Analytics tracking
+    if (p === '/api/track' && request.method === 'POST') {
+      try { const body = await request.json(); const cf = request.cf || {};
+        await env.DB.prepare("CREATE TABLE IF NOT EXISTS analytics_events (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT DEFAULT 'pageview', path TEXT, referrer TEXT, country TEXT, city TEXT, device TEXT, screen TEXT, scroll_depth INTEGER DEFAULT 0, engagement_ms INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now')))").run();
+        await env.DB.prepare('INSERT INTO analytics_events (type, path, referrer, country, city, device, screen, scroll_depth, engagement_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(body.type||'pageview', body.path||'/', body.referrer||'', cf.country||'', cf.city||'', body.device||'', body.screen||'', body.scroll||0, body.time||0).run();
+      } catch(e) {}
+      return new Response(JSON.stringify({ok:true}), {headers:{'Content-Type':'application/json'}});
+    }
+
+    // ── Sovereign Analytics ──
+    if (p === '/api/analytics' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const cf = request.cf || {};
+        const ip = request.headers.get('CF-Connecting-IP') || '';
+        const ipHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip + '2026'));
+        const visitor = btoa(String.fromCharCode(...new Uint8Array(ipHash))).slice(0,12);
+        await env.DB.prepare(`CREATE TABLE IF NOT EXISTS br_analytics (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, referrer TEXT, visitor TEXT, country TEXT, city TEXT, screen TEXT, ts TEXT DEFAULT (datetime('now')))`).run();
+        await env.DB.prepare('INSERT INTO br_analytics (path, referrer, visitor, country, city, screen) VALUES (?,?,?,?,?,?)').bind(body.path||'/', body.ref||'', visitor, cf.country||'', cf.city||'', (body.w||0)+'x'+(body.h||0)).run();
+      } catch(e){}
+      return new Response('ok', {headers:{'Access-Control-Allow-Origin':'*'}});
+    }
+    if (p === '/api/analytics/stats') {
+      try {
+        await env.DB.prepare(`CREATE TABLE IF NOT EXISTS br_analytics (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, referrer TEXT, visitor TEXT, country TEXT, city TEXT, screen TEXT, ts TEXT DEFAULT (datetime('now')))`).run();
+        const total = await env.DB.prepare('SELECT COUNT(*) as c FROM br_analytics').first();
+        const unique = await env.DB.prepare('SELECT COUNT(DISTINCT visitor) as c FROM br_analytics').first();
+        const today = await env.DB.prepare("SELECT COUNT(*) as c FROM br_analytics WHERE ts > datetime('now','-1 day')").first();
+        const pages = await env.DB.prepare('SELECT path, COUNT(*) as views FROM br_analytics GROUP BY path ORDER BY views DESC LIMIT 10').all();
+        const countries = await env.DB.prepare('SELECT country, COUNT(*) as c FROM br_analytics WHERE country != "" GROUP BY country ORDER BY c DESC LIMIT 10').all();
+        return new Response(JSON.stringify({total_views:total?.c||0,unique_visitors:unique?.c||0,today:today?.c||0,top_pages:pages?.results||[],top_countries:countries?.results||[]}),{headers:{'Access-Control-Allow-Origin':'*','Content-Type':'application/json'}});
+      } catch(e) { return new Response(JSON.stringify({error:'analytics unavailable'}),{status:500,headers:{'Content-Type':'application/json'}}); }
+    }
+    if (p === '/health' || p === '/api/health') return j({ok:true,service:'roadside'},c);
 
     try {
       if (!dbReady) {
@@ -1884,6 +1965,114 @@ Return ONLY valid JSON: {"tips":[{"title":"short title","tip":"1-2 sentence acti
       }
 
 
+      // --- Enhanced: Ticket system ---
+      if (p === '/api/tickets' && request.method === 'POST') {
+        if (!env.DB) return j({error:'no db'},c,500);
+        await env.DB.prepare("CREATE TABLE IF NOT EXISTS rs_tickets (id TEXT PRIMARY KEY, subject TEXT, description TEXT, status TEXT DEFAULT 'open', priority TEXT DEFAULT 'normal', category TEXT, user_id TEXT DEFAULT 'anonymous', assigned_agent TEXT, resolution TEXT, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT, resolved_at TEXT)").run();
+        await env.DB.prepare("CREATE TABLE IF NOT EXISTS rs_messages (id TEXT PRIMARY KEY, ticket_id TEXT, sender TEXT, content TEXT, is_agent INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now')))").run();
+        const body = await request.json();
+        const id = crypto.randomUUID().slice(0,12);
+        const cat = (body.category||'general').toLowerCase();
+        const agent = cat === 'billing' ? 'Sebastian' : cat === 'technical' ? 'Silas' : cat === 'account' ? 'Alice' : 'Roadie';
+        await env.DB.prepare("INSERT INTO rs_tickets (id,subject,description,category,user_id,assigned_agent,priority) VALUES (?,?,?,?,?,?,?)").bind(id,body.subject||'',body.description||'',cat,body.user_id||'anonymous',agent,body.priority||'normal').run();
+        stampChain('ticket_created',id,body.subject).catch(()=>{});
+        return j({ok:true,id,assigned_agent:agent},c,201);
+      }
+      if (p === '/api/tickets' && request.method === 'GET') {
+        if (!env.DB) return j({tickets:[]},c);
+        try { await env.DB.prepare("CREATE TABLE IF NOT EXISTS rs_tickets (id TEXT PRIMARY KEY, subject TEXT, description TEXT, status TEXT DEFAULT 'open', priority TEXT DEFAULT 'normal', category TEXT, user_id TEXT DEFAULT 'anonymous', assigned_agent TEXT, resolution TEXT, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT, resolved_at TEXT)").run(); } catch {}
+        const status = url.searchParams.get('status');
+        let q = 'SELECT * FROM rs_tickets'; const b = [];
+        if (status) { q += ' WHERE status = ?'; b.push(status); }
+        q += ' ORDER BY created_at DESC LIMIT 50';
+        const rows = await env.DB.prepare(q).bind(...b).all();
+        return j({tickets:rows.results},c);
+      }
+      const ticketMsgMatch = p.match(/^\/api\/tickets\/([^/]+)\/messages$/);
+      if (ticketMsgMatch && request.method === 'POST') {
+        if (!env.DB) return j({error:'no db'},c,500);
+        const body = await request.json();
+        const id = crypto.randomUUID().slice(0,12);
+        await env.DB.prepare("INSERT INTO rs_messages (id,ticket_id,sender,content,is_agent) VALUES (?,?,?,?,?)").bind(id,ticketMsgMatch[1],body.sender||'user',body.content||'',body.is_agent?1:0).run();
+        return j({ok:true,id},c,201);
+      }
+      if (ticketMsgMatch && request.method === 'GET') {
+        if (!env.DB) return j({messages:[]},c);
+        const rows = await env.DB.prepare('SELECT * FROM rs_messages WHERE ticket_id = ? ORDER BY created_at ASC').bind(ticketMsgMatch[1]).all();
+        return j({messages:rows.results},c);
+      }
+
+      // --- Enhanced: Article search ---
+      if (p === '/api/articles/search') {
+        const q = (url.searchParams.get('q')||'').toLowerCase();
+        const results = RS_ARTICLES.filter(a => a.name.toLowerCase().includes(q) || a.description.toLowerCase().includes(q) || a.steps.some(s => s.toLowerCase().includes(q)));
+        return j({results:results.map(a=>({slug:a.slug,name:a.name,category:a.category,description:a.description})),count:results.length},c);
+      }
+
+      // --- Enhanced: FAQ ---
+      if (p === '/api/faq') {
+        const faqs = [
+          {q:'How do I get started with BlackRoad?',a:'Visit os.blackroad.io, create an account, and follow the onboarding tour. Roadie will guide you.'},
+          {q:'What is RoadCoin?',a:'RoadCoin is the native token rewarding every action on the highway — learning, creating, collaborating.'},
+          {q:'How do the 27 agents work?',a:'Each agent has a unique role. Roadie drives momentum, Lucidia orchestrates memory. They collaborate in RoadTrip.'},
+          {q:'Can I export my data?',a:'Yes — OneWay lets you export everything with full cryptographic proof. Your data is always yours.'},
+          {q:'Is BlackRoad free?',a:'There is a free tier. Premium features unlock with subscription or RoadCoin.'},
+          {q:'How secure is BlackRoad?',a:'CarKeys provides post-quantum encryption. Every action is stamped on RoadChain for immutable provenance.'},
+          {q:'What products are included?',a:'18 products: OS shell + 17 apps covering chat, code, search, publishing, creative, education, and more.'},
+          {q:'How do I contact support?',a:'Use the chat on roadside.blackroad.io or create a ticket. Celeste or Roadie will assist.'},
+          {q:'Can agents work together?',a:'Yes — CarPool connects agents. They hand off tasks, share memory, and orchestrate via RoadTrip.'},
+          {q:'What makes BlackRoad different?',a:'Sovereign OS with 27 persistent AI agents, cryptographic provenance, and true data ownership. Not just tools — a civilization.'},
+        ];
+        return j({faq:faqs,count:faqs.length},c);
+      }
+
+      // --- Enhanced: System status ---
+      if (p === '/api/status') {
+        const products = ['os','roadtrip','roadie','roadview','backroad','roadcode','roadwork','carkeys','roadchain','roadcoin','roadbook','roadworld','officeroad','carpool','oneway','roadside','blackboard','highway'];
+        const checks = await Promise.allSettled(products.map(async pr => {
+          try { const r = await fetch(`https://${pr}.blackroad.io/api/health`,{signal:AbortSignal.timeout(4000)}); return {product:pr,up:r.ok,code:r.status}; }
+          catch { return {product:pr,up:false,code:0}; }
+        }));
+        const statuses = checks.map(r => r.status==='fulfilled'?r.value:{product:'?',up:false});
+        return j({ts:Date.now(),total:products.length,healthy:statuses.filter(s=>s.up).length,products:statuses},c);
+      }
+
+      // --- Enhanced: Onboarding progress ---
+      if (p === '/api/onboarding/start' && request.method === 'POST') {
+        if (!env.DB) return j({error:'no db'},c,500);
+        await env.DB.prepare("CREATE TABLE IF NOT EXISTS rs_onboarding (id TEXT PRIMARY KEY, user_id TEXT, current_step INTEGER DEFAULT 1, total_steps INTEGER DEFAULT 7, completed_steps TEXT DEFAULT '[]', started_at TEXT DEFAULT (datetime('now')), completed_at TEXT)").run();
+        const body = await request.json();
+        const id = crypto.randomUUID().slice(0,12);
+        await env.DB.prepare("INSERT INTO rs_onboarding (id,user_id) VALUES (?,?)").bind(id,body.user_id||'anonymous').run();
+        return j({ok:true,id,current_step:1,total_steps:7},c,201);
+      }
+      if (p === '/api/onboarding/step' && request.method === 'POST') {
+        if (!env.DB) return j({error:'no db'},c,500);
+        const body = await request.json();
+        if (!body.id) return j({error:'id required'},c,400);
+        const ob = await env.DB.prepare('SELECT * FROM rs_onboarding WHERE id = ?').bind(body.id).first();
+        if (!ob) return j({error:'not found'},c,404);
+        const completed = JSON.parse(ob.completed_steps||'[]');
+        if (!completed.includes(ob.current_step)) completed.push(ob.current_step);
+        const next = ob.current_step + 1;
+        const done = next > ob.total_steps;
+        await env.DB.prepare("UPDATE rs_onboarding SET current_step = ?, completed_steps = ?, completed_at = ? WHERE id = ?").bind(done?ob.total_steps:next,JSON.stringify(completed),done?new Date().toISOString():null,body.id).run();
+        if (done) earnCoin(ob.user_id,'onboarding_complete',10).catch(()=>{});
+        return j({ok:true,current_step:done?ob.total_steps:next,completed:done,progress:Math.round((completed.length/ob.total_steps)*100)},c);
+      }
+
+      // --- Enhanced: Feedback ---
+      if (p === '/api/feedback' && request.method === 'POST') {
+        const body = await request.json();
+        if (env.DB) {
+          try {
+            await env.DB.prepare("CREATE TABLE IF NOT EXISTS rs_feedback (id TEXT PRIMARY KEY, article_slug TEXT, helpful INTEGER DEFAULT 1, comment TEXT, created_at TEXT DEFAULT (datetime('now')))").run();
+            await env.DB.prepare("INSERT INTO rs_feedback (id,article_slug,helpful,comment) VALUES (?,?,?,?)").bind(crypto.randomUUID().slice(0,12),body.article_slug||'',body.helpful?1:0,body.comment||'').run();
+          } catch {}
+        }
+        return j({ok:true},c);
+      }
+
       return j({error:'not found'},c,404);
     } catch(e) { return j({error:e.message},c,500); }
   }
@@ -2378,4 +2567,6 @@ async function sendSupport(){const i=document.getElementById('supportInp');const
 document.getElementById('inp')?.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
 document.getElementById('ni')?.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
 document.getElementById('supportInp')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendSupport();});
-</script></body></html>`;
+window.addEventListener('message',function(e){if(e.data</script></script>e.data.type==='blackroad-os:context'){window._osUser=e.data.user;window._osToken=e.data.token;}});if(window.parent!==window)window.parent.postMessage({type:'blackroad-os:request-context'},'*');
+</script><script>!function(){var b=document.createElement("div");b.style.cssText="position:fixed;top:0;left:0;right:0;z-index:99999;background:#0a0a0a;border-bottom:1px solid #1a1a1a;padding:6px 16px;display:flex;align-items:center;justify-content:space-between;font-family:sans-serif";b.innerHTML="<span style=\"font-size:11px;color:#737373\">Part of <a href=\"https://os.blackroad.io\" style=\"color:#f5f5f5;font-weight:600;text-decoration:none\">BlackRoad OS<\/a> \u2014 27 AI agents, 17 products<\/span><a href=\"https://os.blackroad.io\" style=\"font-size:10px;font-weight:600;padding:4px 12px;background:#f5f5f5;color:#000;border-radius:4px;text-decoration:none\">Try Free<\/a>";b.id="br-bar";if(!document.getElementById("br-bar")){document.body.prepend(b);document.body.style.paddingTop=(parseInt(getComputedStyle(document.body).paddingTop)||0)+32+"px"}if(!document.querySelector("[data-cta]")){var f=document.createElement("div");f.dataset.cta="1";f.style.cssText="border-top:1px solid #1a1a1a;padding:24px 16px;text-align:center;background:#0a0a0a;margin-top:32px";f.innerHTML="<div style=\"font-size:14px;font-weight:700;color:#f5f5f5;margin-bottom:6px\">BlackRoad OS<\/div><div style=\"font-size:11px;color:#737373;margin-bottom:12px\">17 products. 27 agents. Free to try.<\/div><a href=\"https://os.blackroad.io\" style=\"display:inline-block;padding:8px 24px;background:#f5f5f5;color:#000;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none\">Open BlackRoad OS<\/a>";document.body.appendChild(f)}}();</script>
+</body></html>`;
