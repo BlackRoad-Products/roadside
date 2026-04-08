@@ -1,46 +1,45 @@
 # RoadSide
 
-*Pull over. We'll take it from here.*
+> **THE SUPPORT DESK** — Part of [BlackRoad OS](https://os.blackroad.io)
 
-Your personal onboarding agent that sets up your entire BlackRoad in minutes through simple conversation.
-
-## The Ride
-
-Pull over at RoadSide. First time on the road? RoadSide hops in, asks where you're headed, collects what you need, and preps the car. You just answer a few questions. It handles the rest.
-
-## What It Does
-
-Conversational setup wizard that walks new users through account creation, AI imports, CarKeys vault setup, RoadTrip passenger selection, and preference configuration — all through natural language chat.
-
-## Integrations
-
-| Service | Role |
-|---------|------|
-| **Clerk** | Account creation and authentication flow |
-| **Cloudflare Workers** | Onboarding logic at the edge |
-| **Cloudflare D1** | Onboarding progress and user preferences |
-| **Ollama / Workers AI** | Powers the conversational agent |
-| **CarKeys** | Auto-generates first credential vault |
-| **RoadTrip** | Sets up initial agent convoy |
-| **CarPool** | Handles external AI imports during setup |
-
-## Features
-
-- Conversational wizard — asks simple questions, handles the rest
-- Auto-creates CarKeys vault and first API keys
-- Imports existing AI data (ChatGPT, Claude, Google Docs) via CarPool
-- Configures RoadTrip with recommended agents
-- Progress dashboard showing setup completion
-- "Reset and try again" with zero data loss
-
-## Status
-
-**PLANNED**
-
-## How It Powers The BlackRoad
-
-RoadSide is the friendly voice that gets you rolling before you even realize you're on the road.
+[![Live](https://img.shields.io/badge/status-LIVE-brightgreen?style=flat-square)](https://roadside.blackroad.io)
+[![BlackRoad OS](https://img.shields.io/badge/BlackRoad_OS-18_products-black?style=flat-square)](https://os.blackroad.io)
+[![Agent](https://img.shields.io/badge/agent-Thalia-8844FF?style=flat-square)](https://roadtrip.blackroad.io)
 
 ---
 
-Part of [BlackRoad OS](https://blackroad.io) — Remember the Road. Pave Tomorrow.
+## AI-powered support desk. Thalia turns every ticket into a conversation.
+
+**Live at:** [roadside.blackroad.io](https://roadside.blackroad.io)  
+**Your agent:** Thalia  
+**Tag:** AI-Powered Support
+
+---
+
+## Connected Products
+
+| Product | URL |
+|---------|-----|
+| [BlackRoad OS](https://os.blackroad.io) | os.blackroad.io |
+| [RoadTrip](https://roadtrip.blackroad.io) | roadtrip.blackroad.io |
+| [Roadie](https://roadie.blackroad.io) | roadie.blackroad.io |
+| [RoadWork](https://roadwork.blackroad.io) | roadwork.blackroad.io |
+
+---
+
+## The Highway
+
+BlackRoad OS is a sovereign AI operating system — 18 products, 27 agents, one persistent tab.
+
+| | | |
+|---|---|---|
+| [BlackRoad OS](https://os.blackroad.io) | [RoadTrip](https://roadtrip.blackroad.io) | [Roadie](https://roadie.blackroad.io) |
+| [RoadView](https://roadview.blackroad.io) | [RoadWork](https://roadwork.blackroad.io) | [RoadCode](https://roadcode.blackroad.io) |
+| [RoadBook](https://roadbook.blackroad.io) | [RoadChain](https://roadchain.blackroad.io) | [RoadCoin](https://roadcoin.blackroad.io) |
+| [BackRoad](https://backroad.blackroad.io) | [BlackBoard](https://blackboard.blackroad.io) | [CarKeys](https://carkeys.blackroad.io) |
+| [CarPool](https://carpool.blackroad.io) | [OfficeRoad](https://officeroad.blackroad.io) | [OneWay](https://oneway.blackroad.io) |
+| [RoadSide](https://roadside.blackroad.io) | [RoadWorld](https://roadworld.blackroad.io) | [Highway](https://highway.blackroad.io) |
+
+---
+
+> *Remember the Road. Pave Tomorrow.* — [BlackRoad OS, Inc.](https://os.blackroad.io)
